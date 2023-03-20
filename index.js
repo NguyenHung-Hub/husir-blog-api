@@ -44,6 +44,10 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
     });
 });
 
+app.get("/test", (req, res) => {
+    return res.json("husir blog");
+});
+
 app.use("/api/auth/", authRoute);
 app.use("/api/user/", userRoute);
 app.use("/api/post/", postRoute);
