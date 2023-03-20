@@ -20,7 +20,7 @@ mongoose.connect(
         if (error) {
             console.error("> Connect database fail: ", error);
         } else {
-            console.log("> Connect database success!! ");
+            console.log("> Connect database success!!! ");
         }
     },
     {}
