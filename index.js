@@ -44,7 +44,7 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
     });
 });
 
-app.get("/test", (req, res) => {
+app.get("/", (req, res) => {
     return res.json("husir blog");
 });
 
