@@ -24,7 +24,8 @@ app.use(express.json());
 app.use(
     cors({
         origin: [
-            "https://husir-blog-api-byt3.vercel.app",
+            "https://husir.vercel.app",
+            "https://husir-husir.vercel.app",
             "http://localhost:3000",
         ],
     })
