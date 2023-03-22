@@ -23,7 +23,10 @@ const {
 app.use(express.json());
 app.use(
     cors({
-        origin: "https://husir-blog-api-byt3.vercel.app",
+        origin: [
+            "https://husir-blog-api-byt3.vercel.app",
+            "http://localhost:3000",
+        ],
     })
 );
 app.use("/images", express.static(path.join(__dirname, "/images")));
