@@ -5,7 +5,6 @@ const configs = require("./src/config");
 const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
-const dataUri = require("datauri");
 
 const cloudinary = require("cloudinary").v2;
 
@@ -22,7 +21,11 @@ const {
 } = require("./src/config");
 
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: "https://husir-blog-api-byt3.vercel.app",
+    })
+);
 app.use("/images", express.static(path.join(__dirname, "/images")));
 mongoose.connect(
     configs.DATABASE_URL_PROD,
