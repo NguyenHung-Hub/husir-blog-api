@@ -5,17 +5,27 @@ const configs = require("./src/config");
 const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
+const dataUri = require("datauri");
+
+const cloudinary = require("cloudinary").v2;
 
 const authRoute = require("./src/routes/auth");
 const userRoute = require("./src/routes/user");
 const postRoute = require("./src/routes/posts");
 const categoryRoute = require("./src/routes/categories");
+const formatBufferTo64 = require("./src/utils/formatBufferTo64");
+const {
+    PORT,
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
+} = require("./src/config");
 
 app.use(express.json());
 app.use(cors());
 app.use("/images", express.static(path.join(__dirname, "/images")));
 mongoose.connect(
-    configs.DATABASE_URL_PROD,
+    configs.DATABASE_URL,
     (error) => {
         if (error) {
             console.error("> Connect database fail: ", error);
@@ -26,22 +36,31 @@ mongoose.connect(
     {}
 );
 
-const storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, "images");
-    },
-
-    filename: (req, file, callback) => {
-        callback(null, `${Date.now()}_${file.originalname}`);
-    },
+// Configuration
+cloudinary.config({
+    cloud_name: CLOUDINARY_CLOUD_NAME,
+    api_key: CLOUDINARY_API_KEY,
+    api_secret: CLOUDINARY_API_SECRET,
 });
+
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage: storage });
 
-app.post("/api/upload", upload.single("file"), (req, res) => {
-    res.status(200).json({
-        url: `http://${req.get("host")}/images/${req.file.filename}`,
-    });
+app.post("/api/upload", upload.single("image"), async (req, res) => {
+    try {
+        const file64 = formatBufferTo64(req.file);
+        const result = await cloudinary.uploader.upload(file64.content, {
+            folder: "husir_blog/post",
+        });
+
+        res.status(200).json({
+            // cloudinaryId: result.public_id,
+            url: result.secure_url,
+        });
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 app.get("/", (req, res) => {
@@ -53,6 +72,6 @@ app.use("/api/user/", userRoute);
 app.use("/api/post/", postRoute);
 app.use("/api/categories/", categoryRoute);
 
-app.listen("5000", () => {
-    console.log("Server is running");
+app.listen(PORT, () => {
+    console.log("\n> Server is running on port:", PORT);
 });
