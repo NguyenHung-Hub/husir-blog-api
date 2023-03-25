@@ -1,9 +1,16 @@
 const router = require("express").Router();
 const Post = require("../models/Post");
+const User = require("../models/User");
 
 router.post("/", async (req, res) => {
     try {
         const newPost = new Post(req.body);
+
+        const insertId = await User.findByIdAndUpdate(
+            req.body.author,
+            { $push: { posts: newPost._id } },
+            { new: true }
+        );
 
         const saved = await newPost.save();
 
@@ -113,18 +120,23 @@ router.get("/:slug", async (req, res) => {
     }
 });
 
-//GET ALL POST
+//GET POSTS
 router.get("/", async (req, res) => {
-    const id = req.query.id;
     const category = req.query.category;
     const recent = req.query.recent;
+    const user = req.query.user;
 
     try {
         let posts;
-        if (id) {
-            posts = await Post.find({ id: id });
+        if (user) {
+            const userDoc = await User.findOne({ _id: user }).populate({
+                path: "posts",
+                match: { hidden: false },
+            });
+
+            const { password, ...result } = userDoc._doc;
+            posts = result;
         } else if (category) {
-            // posts = await Post.find({ categories: { $in: [category] } });
             posts = await Post.aggregate([
                 {
                     $lookup: {
