@@ -32,7 +32,7 @@ app.use(
 );
 app.use("/images", express.static(path.join(__dirname, "/images")));
 mongoose.connect(
-    configs.DATABASE_URL,
+    configs.DATABASE_URL_PROD,
     (error) => {
         if (error) {
             console.error("> Connect database fail: ", error);
