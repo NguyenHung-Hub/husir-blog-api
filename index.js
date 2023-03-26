@@ -59,6 +59,7 @@ app.post("/api/upload", upload.single("image"), async (req, res) => {
         const file64 = formatBufferTo64(req.file);
         const result = await cloudinary.uploader.upload(file64.content, {
             folder: "husir_blog/post",
+            format: "webp",
         });
 
         res.status(200).json({
