@@ -132,6 +132,7 @@ router.get("/", async (req, res) => {
             const userDoc = await User.findOne({ _id: user }).populate({
                 path: "posts",
                 match: { hidden: false },
+                options: { sort: { createdAt: -1 } },
             });
 
             const { password, ...result } = userDoc._doc;
@@ -153,6 +154,7 @@ router.get("/", async (req, res) => {
                         hidden: false,
                     },
                 },
+                { $sort: { createdAt: -1 } },
             ]);
         } else if (recent) {
             posts = await Post.find({ hidden: { $ne: true } }).sort({
@@ -175,6 +177,7 @@ router.get("/", async (req, res) => {
                         hidden: { $ne: true },
                     },
                 },
+                { $sort: { createdAt: -1 } },
             ]);
         }
         res.status(200).json(posts);
