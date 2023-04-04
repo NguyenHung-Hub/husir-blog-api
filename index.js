@@ -19,6 +19,7 @@ const {
     CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET,
 } = require("./src/config");
+const connectDB = require("./src/database/connect");
 
 app.use(express.json());
 app.use(
@@ -31,17 +32,8 @@ app.use(
     })
 );
 app.use("/images", express.static(path.join(__dirname, "/images")));
-mongoose.connect(
-    configs.DATABASE_URL,
-    (error) => {
-        if (error) {
-            console.error("> Connect database fail: ", error);
-        } else {
-            console.log("> Connect database success!!! ");
-        }
-    },
-    {}
-);
+
+connectDB();
 
 // Configuration
 cloudinary.config({
