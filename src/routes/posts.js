@@ -65,6 +65,18 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+router.get("/search", async (req, res) => {
+    const value = req.query.value;
+    console.log(`file: posts.js:191 > value:`, { value });
+
+    try {
+        const result = await Post.find({ $text: { $search: value } });
+        res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 router.get("/recommend", async (req, res) => {
     const number = Number(req.query?.number || 3);
 
@@ -133,6 +145,7 @@ router.get("/", async (req, res) => {
                 path: "posts",
                 match: { hidden: false },
                 options: { sort: { createdAt: -1 } },
+                populate: { path: "categories" },
             });
 
             const { password, ...result } = userDoc._doc;
